@@ -28,16 +28,17 @@ function translate() {
     fetch("api/word?w=" + searchWords.value)
         .then(r => r.json())
         .then(w => {
-            if (searchWords.value !== w.word1 && searchWords.value !== w.word2) {
+            if (searchWords.value !== w.word1 &&
+                searchWords.value !== w.word2) {
                 throw new Error("Word is not saved!")
             } else {
                 (displayWords.innerHTML = w.word1 + " = " + w.word2)
             };
-        }).catch(err => alert("Word is not saved, or it's not spelled correctly. Please, check your input!"));
+        }).catch(err => alert("Word is not saved, or it's not spelled correctly. Please, check your input and turn the 'CAPS LOCK' OFF!"));
 
     if (searchWords.value === '') {
         alert("Warning, input required!")
-        displayWords.innerHTML = "words missing!";
+        displayWords.innerHTML = "search-words missing!";
 
     }
 
