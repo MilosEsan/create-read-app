@@ -1,27 +1,71 @@
+require('dotenv').config()
 const express = require("express");
-const bodyParser = require("body-parser");
-const WordRepository = require("./word-repo.js");
+const bodyParser = require('body-parser');
+const { request } = require("express");
+const MongoClient = require('mongodb').MongoClient
 
 
-const port = process.env.PORT || 3000;
-const wordRepository = new WordRepository("content/words1.json");
-const app = express();
 
-app.use(express.static("public"));
-app.use(bodyParser.json());
+const app = express()
 
-app.get("/api/word", async(req, res) => {
-    let result = await wordRepository.findWord(req.query.w);
 
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(result), "utf8");
-});
 
-app.post("/api/word", async(req, res) => {
-    await wordRepository.addWord(req.body);
+const connectionKey = process.env.DB_PASS;
 
-    res.writeHead(200);
-    res.end("word added", "utf8");
-});
+MongoClient.connect(connectionKey, { useUnifiedTopology: true })
+    .then(client => {
+        console.log('Connected to Database');
+        const db = client.db('dictionary');
+        const wordCollection = db.collection('all-words')
 
-app.listen(port, () => console.log(`app listening on port ${port}!`));
+        app.set('view engine', 'ejs')
+        app.use(bodyParser.urlencoded({ extended: true }))
+        app.use(bodyParser.json())
+        app.use(express.static('public'))
+
+        app.listen(3000, function() {
+            console.log('listening on 3000')
+        })
+
+        app.get("/", (req, res) => {
+            db.collection('all-words').find().toArray()
+                .then(results => {
+                    res.render('index.ejs', { words: results })
+                })
+                .catch( /* ... */ )
+        });
+
+        app.post('/words', (req, res) => {
+            wordCollection.insertOne(req.body)
+                .then(result => {
+                    console.log(result)
+                    res.redirect('/')
+                })
+                .catch(error => console.log(error))
+        })
+
+        app.put('/words', (req, res) => {
+            wordCollection.findOneAndUpdate({ input1: req.body.input1 }, {
+                    $set: {
+                        input1: req.body.input1,
+                        input2: req.body.input2
+                    }
+                }, {
+                    upsert: false
+                })
+                .then(result => res.json('Success'))
+                .catch(error => console.error(error))
+        })
+
+        app.delete('/words', (req, res) => {
+            wordCollection.deleteOne(req.body)
+                .then(result => {
+                    if (result.deletedCount === 0) {
+                        return res.json('No word to delete')
+                    }
+                    res.json('Deleted Darth Vadar\'s quote')
+                })
+                .catch(error => console.error(error))
+        })
+    })
+    .catch(error => console.error(error))

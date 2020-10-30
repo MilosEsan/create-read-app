@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>CRUD app</title>
+
+    <style>
+        body {
+            min-height: 100vh;
+            background-image: linear-gradient(160deg, #e8eaeb 0%, #d8e7e5 100%);
+        }
+        
+        input,
+        button {
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        span {
+            font-weight: bold;
+        }
+        
+        .data-units {
+            background-color: #ffffff;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body style="text-align: center;">
+
+    <h1>CRUD & Dictionary App</h1>
+    <small><em>Dedicated to server-side coding</em></small>
+
+    <div class="mt-5">
+
+        <h3>Create</h3>
+        <form action="/words" method="POST">
+            <input type="text" name="input1" id="input1">
+            <label for="input1">input1 (green word) /language 1/</label>
+            <br />
+
+            <input type="text" name="input2" id="input2">
+            <label for="input2">input2 (yellow word) /language 2/</label>
+            <br />
+
+            <button class="btn-primary" id="addWords" type="submit">add words</button>
+        </form>
+    </div>
+    <br />
+
+    <div class="mt-5">
+        <h3>Update</h3>
+        <input style="width: 220px; margin-bottom: 10px;" placeholder="type here target (green word)" type="text" name="update1" id="update1">
+        <input style="width: 300px; margin-bottom: 10px;" placeholder="type here word(s) to change yellow value" type="text" name="update2" id="update2">
+        <button class="btn-secondary" id="update">update</button>
+
+
+    </div>
+
+    <div class="mt-5">
+        <h3>Read</h3>
+        <div class="data-units">
+            <h5><em>Data-units</em></h5>
+            <% for(var i = 0; i < words.length; i++) {%>
+                <br>
+                <span class="text-success mt-3" id="displayWords">
+
+                <%= words[i].input1 %>
+            </span> <i class="text-danger">=</i>
+                <span class="text-warning mt-3" id="displayWords">
+                <%= words[i].input2 %>
+            </span>
+                <br>
+
+                <% } %>
+
+        </div>
+
+    </div>
+
+    <div class="mt-5">
+        <h3>Delete</h3>
+        <input style="width: 335px; margin-bottom: 10px;" placeholder="type here any green word to remove data-unit" type="text" name="input3" id="deleteWords">
+
+        <button class="btn-danger" id="delete">delete this unit from database</button>
+        <p id="displayDelWords"></p>
+
+    </div>
+
+
+    <script type="text/javascript" src="scripts/script.js"></script>
+</body>
+
+</html>

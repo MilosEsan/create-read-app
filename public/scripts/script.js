@@ -1,45 +1,51 @@
-let input1 = document.getElementById("input1");
-let input2 = document.getElementById("input2");
-let displayWords = document.getElementById("displayWords");
+const update = document.getElementById('update')
+const del = document.getElementById('delete')
+const delDisplay = document.getElementById("displayDelWords")
+const delInput = document.getElementById("deleteWords")
 
-document.getElementById("addWords").addEventListener("click", addWords);
-document.getElementById("search").addEventListener("click", translate);
+const inp1 = document.getElementById("update1")
+const inp2 = document.getElementById("update2")
 
-function addWords() {
-    let words = {
-        word1: input1.value,
-        word2: input2.value
-    };
 
-    fetch("api/word", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(words)
+
+update.addEventListener('click', function() {
+
+    fetch('/words', {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                input1: inp1.value,
+                input2: inp2.value
+            })
         })
-        .then(r => r.text())
-        .then(t => alert(t));
-}
+        .then(res => {
+            if (res.ok) return res.json()
+        })
+        .then(response => {
+            window.location.reload(true)
+        })
 
-function translate() {
-    let searchWords = document.getElementById("searchWords");
+})
 
-    fetch("api/word?w=" + searchWords.value)
-        .then(r => r.json())
-        .then(w => {
-            if (searchWords.value !== w.word1 &&
-                searchWords.value !== w.word2) {
-                throw new Error("Word is not saved!")
+del.addEventListener('click', function() {
+    fetch('/words', {
+            method: 'delete',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                input1: delInput.value
+            })
+        })
+        .then(res => {
+            if (res.ok) return res.json()
+        })
+        .then(response => {
+            if (response === 'No word to delete') {
+                delDisplay.textContent = 'Word not found or already deleted'
+
             } else {
-                (displayWords.innerHTML = w.word1 + " = " + w.word2)
-            };
-        }).catch(err => alert("Word is not saved, or it's not spelled correctly. Please, check your input and turn the 'CAPS LOCK' OFF!"));
-
-    if (searchWords.value === '') {
-        alert("Warning, input required!")
-        displayWords.innerHTML = "search-words missing!";
-
-    }
-
-}
+                window.location.reload(true)
+                    // delDisplay.textContent = "check Your Input"
+            }
+        })
+        .catch(console.error)
+})
