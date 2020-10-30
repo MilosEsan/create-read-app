@@ -23,9 +23,8 @@ MongoClient.connect(connectionKey, { useUnifiedTopology: true })
         app.use(bodyParser.json())
         app.use(express.static('public'))
 
-        app.listen(3000, function() {
-            console.log('listening on 3000')
-        })
+        const port = process.env.PORT || 3000
+        app.listen(port)
 
         app.get("/", (req, res) => {
             db.collection('all-words').find().toArray()
